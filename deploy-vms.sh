@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO: 
+# 	1. Create more distro options for cloud-init
+#	2. Create & Enable SSH connections
+
 echo "========================================================================================"
 echo "					Storage Status:	                                                      "
 echo "========================================================================================"
