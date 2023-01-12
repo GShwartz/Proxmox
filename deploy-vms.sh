@@ -70,13 +70,18 @@ create_vm() {
 	
 }
 
-minimaldist="ubuntu-22.10-minimal-cloudimg-amd64.img"
-minilnk="https://cloud-images.ubuntu.com/minimal/releases/kinetic/release/ubuntu-22.10-minimal-cloudimg-amd64.img"
-miniloc="/var/lib/vz/template/iso/ubuntu-22.10-minimal-cloudimg-amd64.img"
-if ! [ -f $miniloc ]; then
-	wget $minilnk
-	mv ubuntu-22.10-minimal-cloudimg-amd64.img /var/lib/vz/template/iso/
-fi
+config_images() {
+	minimaldist="ubuntu-22.10-minimal-cloudimg-amd64.img"
+	miniloc="/var/lib/vz/template/iso/ubuntu-22.10-minimal-cloudimg-amd64.img"
+	minilnk="https://cloud-images.ubuntu.com/minimal/releases/kinetic/release/ubuntu-22.10-minimal-cloudimg-amd64.img"
+	if ! [ -f $miniloc ]; then
+		wget $minilnk
+		mv ubuntu-22.10-minimal-cloudimg-amd64.img /var/lib/vz/template/iso/
+	fi
+
+}
+
+config_images
 
 # Start VM creation process with updated IDs & names
 for ((i=0;i<=$vmnum-1; i++)); do
