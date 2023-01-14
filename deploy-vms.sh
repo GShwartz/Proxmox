@@ -5,24 +5,26 @@ create_vm() {
 	local ip=$2
 	local vname=$3
 	local style=$4
+	local gate=$5
+	local newid=$6
 	
-	qm create $vmid --name $vname --memory $vmram --cores $corenum
+	qm create $newid --name $vname --memory $vmram --cores $corenum
 	qm importdisk $vmid /var/lib/vz/template/iso/ubuntu-22.10-minimal-cloudimg-amd64.img local-lvm
-	qm set $vmid --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$vmid-disk-0
-	qm set $vmid --ide0 local-lvm:cloudinit
-	qm set $vmid --boot c --bootdisk scsi0
-	qm set $vmid --serial0 socket --vga serial0
-	qm set $vmid --ciuser $sshuser
-	qm set $vmid --cipassword $sshpass
-	qm set $vmid --agent 1
-	qm set $vmid --sshkeys ~/.ssh/gil.pub
-	qm set $vmid --net0 virtio,bridge=vmbr0
+	qm set $newid --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$newid-disk-0
+	qm set $newid --ide0 local-lvm:cloudinit
+	qm set $newid --boot c --bootdisk scsi0
+	qm set $newid --serial0 socket --vga serial0
+	qm set $newid --ciuser $sshuser
+	qm set $newid --cipassword $sshpass
+	qm set $newid --agent 1
+	qm set $newid --sshkeys ~/.ssh/gil.pub
+	qm set $newid --net0 virtio,bridge=vmbr0
 	if [[ $style == "manual" ]]; then
 		ip=${ip::-1}
-		qm set $vmid --ipconfig0 gw=192.168.100.2,ip="$ip"$((counter+1))/24
+		qm set $newid --ipconfig0 gw="$gate",ip="$ip"$((counter+1))/24
 	
 	else
-		qm set $vmid --ipconfig0 ip=dhcp
+		qm set $newid --ipconfig0 ip=dhcp
 	
 	fi
 	
@@ -92,10 +94,10 @@ read -p "Cores: " corenum
 read -p "HD Size (GB): " hdsize
 
 # SSH Username
-read -p "Username: " sshuser
+read -p "SSH Username: " sshuser
 
 # SSH Password
-read -s -p "Password: " sshpass
+read -s -p "SSH Password: " sshpass
 
 while true; do
 	echo "IP Address Options"
@@ -134,30 +136,35 @@ if [[ $ipaddress == "manual" ]]; then
 		
 		fi
 	done
+	
+	while true; do
+		read -p "Gateway IP Address: " gateway
+		if validate_ip $gateway; then
+			break
+		
+		else
+			echo "Input error."
+		
+		fi
+	done
 fi
 
 config_images
 for ((i=0;i<=$vmnum-1; i++)); do
 	newname="${vmname}0$(expr 1 + $i)"
 	if [[ $i -eq 0 ]]; then
-		newvmid="$(expr $vmid)";
+		newvmid="$(expr $vmid)"
 		
 	else
-		newvmid="$(expr $newvmid + $i)";
-		
+		newvmid="$(expr $newvmid + $i)"
+				
 	fi
 	
-	create_vm $i $ip $newname $ipaddress
+	create_vm $i $ip $newname $ipaddress $gateway $newvmid &
 	
 done
 wait
 
 # Run first VM for testing
-echo "Staring first VM for testing.."
-qm start $vmid
-
-
-#qm guest exec $vmid bash "sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config"
-
-# Backup one-liner for vm creation
-#qm create $newvmid --name $newname --memory $vmram --cores $corenum --ide0 local-lvm:$hdsize --net0 virtio,bridge=vmbr0 --ide1 /var/lib/vz/template/iso/$vmos,media=cdrom --boot c &
+#echo "Staring first VM for testing.."
+#qm start $vmid
