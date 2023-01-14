@@ -9,7 +9,7 @@ create_vm() {
 	local newid=$6
 	
 	qm create $newid --name $vname --memory $vmram --cores $corenum
-	qm importdisk $vmid /var/lib/vz/template/iso/ubuntu-22.10-minimal-cloudimg-amd64.img local-lvm
+	qm importdisk $newid /var/lib/vz/template/iso/ubuntu-22.10-minimal-cloudimg-amd64.img local-lvm
 	qm set $newid --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$newid-disk-0
 	qm set $newid --ide0 local-lvm:cloudinit
 	qm set $newid --boot c --bootdisk scsi0
