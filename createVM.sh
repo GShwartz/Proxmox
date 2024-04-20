@@ -3,11 +3,11 @@
 # Variables
 VMID=$1  # VM ID to be passed as the first argument
 DISK_PATH="/var/lib/vz/template/iso/fortios.qcow2"  # Path to the QCOW2 disk image
-CLOUD_INIT_ISO="fgt-bootstrap.iso"  # Filename of the Cloud-Init ISO
-SLEEP_DURATION=5
-TIMEOUT_DURATION=10
-RETRY_LIMIT=3
-TOTAL_TIME=45
+CLOUD_INIT_ISO="fgt-config.iso"  # Filename of the Cloud-Init ISO
+SLEEP_DURATION=5	# Time to wait for the VM to stop
+TIMEOUT_DURATION=10	# Time to wait for the VM to pause
+RETRY_LIMIT=3	# Number of times to try to stop the VM until return 1
+TOTAL_TIME=70	# Time to wait for the cloud-init initial configuration
 
 
 stop_vm() {
@@ -107,11 +107,4 @@ for i in $(seq 1 $TOTAL_TIME); do
 done
 echo -e "\nInstallation wait period complete."
 
-echo "Stopping VMID $VMID..."
-stop_vm $VMID
-
-echo "Starting $VMID & configuration..."
-qm start $VMID
-
-#echo "VMID $VMID has been successfully shut down."
-echo "FIN"
+echo "VM $VMID created successfully."
