@@ -1,0 +1,34 @@
+Directory tree for cloud-init user_data file:
+├── kvm
+	└── bootstrap
+		└── kvm-cloudinit
+			└── openstack
+				└── latest
+					└── user_data
+					
+					
+user_data example content:
+Content-Type: multipart/mixed; boundary="===============0740947994048919689=="
+MIME-Version: 1.0
+
+--===============0740947994048919689==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="config"
+
+config system global
+        set hostname gil
+end
+config system admin
+        edit admin
+        set password Pass1234!
+end
+--===============0740947994048919689==--
+
+
+iso generation command:
+	genisoimage -output /var/lib/vz/template/iso/fgt-config.iso -volid cidata -joliet -rock kvm-cloudinit/
+	
+
+Run the createVM.sh script.
