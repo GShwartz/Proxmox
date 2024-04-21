@@ -29,23 +29,23 @@ config system admin
 end
 
 config system interface
- edit port1
- set mode static
- set ip 192.168.100.101 255.255.255.0
- set allowaccess ping https http ssh
+	edit port1
+	set mode static
+	set ip 192.168.100.101 255.255.255.0
+	set allowaccess ping https http ssh
 end
 
 config system dns
- set primary 8.8.8.8
- set secondary 8.8.4.4
+	set primary 8.8.8.8
+	set secondary 8.8.4.4
 end
 
 config router static
-    edit 0
-    set dst 0.0.0.0 0.0.0.0
-    set gateway 192.168.100.2
-    set device port1
-    next
+	edit 0
+	set dst 0.0.0.0 0.0.0.0
+	set gateway 192.168.100.2
+	set device port1
+	next
 end
 
 execute shutdown
